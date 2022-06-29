@@ -20,37 +20,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::get("/getAttendance/{ip}", function ($ip) {
+Route::get("/get/{ip}/{type}", function ($ip, $type) {
     try {
         $zk = new ZKTeco($ip);
         $ret = $zk->connect();
         if ($ret) {
             $zk->disableDevice();
             try {
-                $attendance = $zk->getAttendance();
-                $time = $zk->getTime();
-            } catch (Exception $exception) {
-                dd($exception->getMessage());
-            }
-            sleep(1);
-            $zk->getTime();
-            $zk->enableDevice();
-            $zk->disconnect();
-            return $attendance;
-        }
-    } catch (Exception $exception) {
-        dd($exception->getMessage());
-    }
-});
+                $type == "attendance"
+                    ? $result = $zk->getAttendance()
+                    : $result = $zk->getUser();
 
-Route::get("/getUsers/{ip}", function ($ip) {
-    try {
-        $zk = new ZKTeco($ip);
-        $ret = $zk->connect();
-        if ($ret) {
-            $zk->disableDevice();
-            try {
-                $users = $zk->getUser();
                 $time = $zk->getTime();
             } catch (Exception $exception) {
                 dd($exception->getMessage());
@@ -59,7 +39,7 @@ Route::get("/getUsers/{ip}", function ($ip) {
             $zk->getTime();
             $zk->enableDevice();
             $zk->disconnect();
-            return $users;
+            return $result;
         }
     } catch (Exception $exception) {
         dd($exception->getMessage());
